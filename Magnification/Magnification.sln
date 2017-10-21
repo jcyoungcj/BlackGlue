@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Magnification", "Magnification\Magnification.vcxproj", "{086F9B67-9316-401F-A7D1-0B2E008BCA20}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagnificationTest", "MagnificationTest\MagnificationTest.vcxproj", "{B45B5D33-55AC-4D4F-83B2-90204BAE1095}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Debug|Win32.ActiveCfg = Debug|Win32
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Debug|Win32.Build.0 = Debug|Win32
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Debug|x64.ActiveCfg = Debug|x64
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Debug|x64.Build.0 = Debug|x64
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Release|Win32.ActiveCfg = Release|Win32
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Release|Win32.Build.0 = Release|Win32
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Release|x64.ActiveCfg = Release|x64
+		{086F9B67-9316-401F-A7D1-0B2E008BCA20}.Release|x64.Build.0 = Release|x64
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Debug|Win32.Build.0 = Debug|Win32
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Debug|x64.ActiveCfg = Debug|x64
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Debug|x64.Build.0 = Debug|x64
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Release|Win32.ActiveCfg = Release|Win32
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Release|Win32.Build.0 = Release|Win32
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Release|x64.ActiveCfg = Release|x64
+		{B45B5D33-55AC-4D4F-83B2-90204BAE1095}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
