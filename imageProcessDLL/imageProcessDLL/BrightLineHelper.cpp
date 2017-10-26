@@ -6,6 +6,13 @@ const char* METHOD_2 = "METHOD_2"; //Ëã·¨µÄÃû×Ö
 
 int DetectBrightLine_1(Mat& src, IVRectangle rect, BrightLinePara1& para, BrightLineResults& res)
 {
+	if (src.empty())
+		return -1;
+	if (rect.topLeftPoint.x > rect.bottomRightPoint.x || rect.topLeftPoint.y > rect.bottomRightPoint.y)
+		return -1;
+	if (para.radius < 3 || para.thre < 5)
+		return -1;
+
 	res.arrSize = 0;
 	strcpy(res.algorithmName, METHOD_1);
 

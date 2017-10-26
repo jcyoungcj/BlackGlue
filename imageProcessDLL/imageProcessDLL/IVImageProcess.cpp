@@ -5,6 +5,7 @@
 #include "getAdhersiveResult_thresh.h"
 #include "getAdhersiveResult_binary.h"
 
+
 using namespace cv;
 using namespace std;
 using namespace Halcon;
@@ -56,6 +57,14 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	Mat rectInImage;
 	getRectRegion(inImage, rectangle, rectInImage);
 
+	//改变亮度
+	for (int y = 0; y < rectInImage.rows;y++){
+		for (int x = 0; x < rectInImage.cols;x++){
+			rectInImage.at<Vec3b>(y,x)[3] = 0;
+		}
+	
+	}
+
 	//2.图像格式转换
 	ho_Image = MatToHImage(rectInImage);
 	rgb1_to_gray(ho_Image, &ho_Image);
@@ -100,6 +109,11 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 			}
 		}
 	}
+#ifdef _DEBUG
+	Point p(circleCentre.x, circleCentre.y);
+	circle(rectInImage, p, 0, Scalar(0, 255, 0));
+	imshow("圆孔定位", rectInImage);
+#endif
 	return ret;
 }
 
@@ -182,7 +196,7 @@ extern"C" __declspec(dllexport)  int getAdhesiveResults(
 	//输入参数判断
 	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
 		rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y>inImage.rows
+		rectangle.bottomRightPoint.y>inImage.rows || adhesivePara.algorithmID<1
 		){
 		ret = -1; return ret;
 	}
@@ -214,18 +228,20 @@ extern"C" __declspec(dllexport)  int getBrightLineResults(
 	OUT BrightLineResults & brightLineResults                    // 输出黑胶在图片中的比例
 	)
 {
+	int ret = 0;
 	switch (brightLinePara.algorithmID)
 	{
 	case 1:
-		DetectBrightLine_1(inImage, rectangle, brightLinePara.brightLinePara1, brightLineResults);
+		ret = DetectBrightLine_1(inImage, rectangle, brightLinePara.brightLinePara1, brightLineResults);
 		break;
 	case 2:
-		DetectBrightLine_2(inImage, rectangle, brightLinePara.brightLinePara2, brightLineResults);
+		ret = DetectBrightLine_2(inImage, rectangle, brightLinePara.brightLinePara2, brightLineResults);
 		break;
 	default:
 		break;
 	}
-	return 0;
+
+	return ret;
 }
 
 // DM二维码识别

@@ -1,5 +1,8 @@
 #include "getAdhersiveResult_thresh.h"
 #include "getRectRegion.h"
+#include <opencv2\highgui\highgui.hpp> 
+#include <opencv2\opencv.hpp>
+
 using namespace Halcon;
 using namespace cv;
 // 阈值分割法黑胶检测
@@ -27,7 +30,7 @@ int getAdhersiveResult_binary(
 	//输入参数判断
 	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
 		rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y>inImage.rows
+		rectangle.bottomRightPoint.y>inImage.rows || adhesivePara.algorithmID!=2
 		){
 		ret = -1; return ret;
 	}
@@ -124,6 +127,29 @@ int getAdhersiveResult_binary(
 		adhesiveResults.adhesiveBlack.pRectangle[ii - 1].bottomRightPoint.y = black_row2[0].D() + rectangle.topLeftPoint.y;
 		adhesiveResults.adhesiveBlack.pRectangle[ii - 1].bottomRightPoint.x = black_column2[0].D() + rectangle.topLeftPoint.x;
 	}
+
+#ifdef _DEBUG
+	int bb = adhesiveResults.adhesiveBlack.connectionNum;
+	while (bb){
+		/*Point p1(0,0);
+		Point p2(0,0);*/
+		Rect r(adhesiveResults.adhesiveBlack.pRectangle[b - 1].topLeftPoint.x, adhesiveResults.adhesiveBlack.pRectangle[b - 1].topLeftPoint.y,
+			adhesiveResults.adhesiveBlack.pRectangle[b - 1].bottomRightPoint.x, adhesiveResults.adhesiveBlack.pRectangle[b - 1].bottomRightPoint.y);
+		cv::rectangle(rectInImage, r, Scalar(0, 255, 255), 1);		
+		bb--;
+	}
+
+
+	int ww = adhesiveResults.adhesiveWhite.connectionNum;
+	while (ww){
+		Rect r(adhesiveResults.adhesiveWhite.pRectangle[w - 1].topLeftPoint.x, adhesiveResults.adhesiveWhite.pRectangle[w - 1].topLeftPoint.y,
+			adhesiveResults.adhesiveWhite.pRectangle[w - 1].bottomRightPoint.x, adhesiveResults.adhesiveWhite.pRectangle[w - 1].bottomRightPoint.y);
+		cv::rectangle(rectInImage, r, Scalar(0, 255, 0), 1);
+		
+		ww--;
+	}
+	imshow("黑胶检测结果", rectInImage);
+#endif
 
 	return 0;
 }

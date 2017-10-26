@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "IVImageProcess.h"
-
+#include <opencv2\opencv.hpp>
 #include <iostream>
 #include <time.h>
 using namespace std;
@@ -27,7 +27,26 @@ void testBlack(){
 	adhesivePara = { 2, {}, {1.0, 3.5} };
 	getAdhesiveResults(ho_Image, rectangle, adhesivePara, adhesiveResults);
 	clock_t black2 = clock();
+	int b = adhesiveResults.adhesiveBlack.connectionNum;
+	
+	
+	while (b){
+		Rect r(adhesiveResults.adhesiveBlack.pRectangle[b - 1].topLeftPoint.x, adhesiveResults.adhesiveBlack.pRectangle[b - 1].topLeftPoint.y,
+			adhesiveResults.adhesiveBlack.pRectangle[b - 1].bottomRightPoint.x, adhesiveResults.adhesiveBlack.pRectangle[b - 1].bottomRightPoint.y);
+		cv::rectangle(ho_Image, r, Scalar(0, 255, 255), 1);
+		b--;
+	}
+
+	int w = adhesiveResults.adhesiveWhite.connectionNum;
+	while (w){
+		Rect r(adhesiveResults.adhesiveWhite.pRectangle[w - 1].topLeftPoint.x, adhesiveResults.adhesiveWhite.pRectangle[w - 1].topLeftPoint.y,
+			adhesiveResults.adhesiveWhite.pRectangle[w - 1].bottomRightPoint.x, adhesiveResults.adhesiveWhite.pRectangle[w - 1].bottomRightPoint.y);
+		cv::rectangle(ho_Image, r, Scalar(0, 255, 0), 1);
+		w--;
+	}
+	imshow("黑胶检测结果", ho_Image);
 	cout << "黑胶检测2时间：" << (double)(black2 - black) << endl;
+	waitKey();
 }
 
 void test_DMDecode() {
@@ -56,7 +75,7 @@ void test_DMDecode() {
 }
 
 //测试亮线
-#include <opencv2\opencv.hpp>
+
 void testBrightLine()
 {
 	BrightLinePara blp;
@@ -77,10 +96,29 @@ void testBrightLine()
 	rectangle(tmp, blr.arrContours[0].rectBounding, Scalar(0, 255, 0));
 	imwrite("brightline.bmp", tmp);
 }
+void mark(){
 
+		//-------------------------------圆孔定位----------------------------------//
+		MarkPara makePara = {2.0,2.4,50,99999,20};
+		IVPoint circleCentre;
+		Mat ho_Image = imread("C:/Users/jcyoung/Desktop/20171009/2.bmp");
+	
+		IVPoint point1 = {0,0};
+		IVPoint point2 = { ho_Image.cols, ho_Image.rows };
+		IVRectangle rectangle = { point1, point2 };
+	    clock_t read = clock();
+		getMarkLocation(ho_Image, rectangle, makePara, circleCentre);
+		clock_t mark = clock();
+		Point p(circleCentre.x, circleCentre.y);
+		circle(ho_Image, p, 0, Scalar(0, 255, 0));
+		imshow("圆孔定位",ho_Image);
+		cout << "mark时间：" << (double)(mark - read) << endl;
+		waitKey();
+}
 
 int main()
 {
+	//---------------------------亮线检测----------------------------------//
 	testBrightLine();
 //	//HObject  ho_Image;
 //	clock_t start = clock();
@@ -92,24 +130,20 @@ int main()
 //	IVRectangle rectangle = { point1, point2 };
 //	AdhesiveResults adhesiveResults;
 //
-//	//---------------------------黑胶检测结果----------------------------------//
+	//---------------------------黑胶检测结果----------------------------------//
 	testBlack();
-//	clock_t black = clock();
+
 //	//-------------------------------圆孔定位----------------------------------//
-//	MarkPara makePara = {2.0,2.4,50,99999,20};
-//	IVPoint circleCentre;
-//	getMarkLocation(ho_Image, rectangle, makePara, circleCentre);
-//	clock_t mark = clock();
-//	cout << "mark时间：" << (double)(mark - black) << endl;
-//	//---------------------------------图像放大率-----------------------------------//
+	mark();
+	//---------------------------------图像放大率-----------------------------------//
 //	int magnification;
 //	int mag = 3;				//已知直径，微米
 //	getImageMagnification(ho_Image, mag, magnification);
 //	clock_t magni = clock();
 //	cout << "放大率检测时间：" << (double)(magni - mark) << endl;	
-//	//--------------------------------//
+	//------------------------------------------二维码----------------------------------------//
+	test_DMDecode();
 
-//	test_DMDecode();
 	system("pause");
     return 0;
 }

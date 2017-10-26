@@ -8,6 +8,7 @@
 #define OUT
 #define INOUT
 
+
 // Point
 typedef struct _IVPoint
 {
@@ -27,10 +28,10 @@ typedef struct _IVRectangle
 // 定位孔位置计算，输入参数
 typedef struct _MarkPara
 {
-	double alpha;									// canny算子  默认值： 2.0 ,1.0
-	double sigma;									//gauss		  默认值：2.4
-	int minGirth;									// 最小周长	  默认值：50
-	int maxGirth;									// 最大周长   默认值：99999
+	double alpha;									// canny算子   默认值： 2.0 ,1.0
+	double sigma;									// gauss	   默认值：2.4
+	int minGirth;									// 最小周长	   默认值：50
+	int maxGirth;									// 最大周长    默认值：99999
 	int maxLackGirth;								// 圆最大缺口  默认值：20
 }MarkPara;
 

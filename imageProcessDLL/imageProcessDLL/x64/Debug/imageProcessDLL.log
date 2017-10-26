@@ -1,14 +1,23 @@
-﻿生成启动时间为 2017/10/13 9:52:24。
-     1>项目“E:\滨江富士康电路板检测\imageProcessDLL\imageProcessDLL\imageProcessDLL.vcxproj”在节点 2 上(Build 个目标)。
+﻿生成启动时间为 2017/10/26 16:10:43。
+     1>项目“E:\滨江富士康电路板检测\imageProcessDLL\imageProcessDLL\imageProcessDLL.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>ClCompile:
-         D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _DEBUG /D _WINDOWS /D _USRDLL /D IMAGEPROCESSDLL_EXPORTS /D NOMINMAX /D _CRT_SECURE_NO_WARNINGS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt BrightLineHelper.cpp IVImageProcess.cpp getAdhersiveResult_binary.cpp getAdhersiveResult_thresh.cpp getRectRegion.cpp
-         BrightLineHelper.cpp
+         D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _DEBUG /D _WINDOWS /D _USRDLL /D IMAGEPROCESSDLL_EXPORTS /D NOMINMAX /D _CRT_SECURE_NO_WARNINGS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt BrightLineHelper.cpp getAdhersiveResult_binary.cpp getAdhersiveResult_thresh.cpp getRectRegion.cpp imageProcessDLL.cpp ImgTransform.cpp IVImageProcess.cpp stdafx.cpp
+         stdafx.cpp
+         IVImageProcess.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>BrightLineHelper.cpp(50): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-         正在生成代码...
-         正在编译...
+     1>IVImageProcess.cpp(106): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>IVImageProcess.cpp(108): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+         ImgTransform.cpp
+     1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>ImgTransform.cpp(44): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
+     1>ImgTransform.cpp(45): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
+     1>ImgTransform.cpp(54): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
+     1>ImgTransform.cpp(55): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
+         imageProcessDLL.cpp
          getRectRegion.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
@@ -17,41 +26,42 @@
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>getAdhersiveResult_thresh.cpp(72): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_thresh.cpp(87): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_thresh.cpp(73): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(88): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(89): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(90): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(91): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_thresh.cpp(102): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_thresh.cpp(119): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_thresh.cpp(92): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_thresh.cpp(103): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(120): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(121): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(122): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_thresh.cpp(123): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_thresh.cpp(124): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
          getAdhersiveResult_binary.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>getAdhersiveResult_binary.cpp(73): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(88): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(89): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(90): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(76): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_binary.cpp(91): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_binary.cpp(92): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(103): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(121): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(122): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>getAdhersiveResult_binary.cpp(123): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(93): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(94): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(95): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(106): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_binary.cpp(124): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
      1>getAdhersiveResult_binary.cpp(125): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-         IVImageProcess.cpp
+     1>getAdhersiveResult_binary.cpp(126): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(127): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>getAdhersiveResult_binary.cpp(128): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+         BrightLineHelper.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>IVImageProcess.cpp(97): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>IVImageProcess.cpp(99): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>BrightLineHelper.cpp(57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
          正在生成代码...
+         D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _DEBUG /D _WINDOWS /D _USRDLL /D IMAGEPROCESSDLL_EXPORTS /D NOMINMAX /D _CRT_SECURE_NO_WARNINGS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt dllmain.cpp
+         dllmain.cpp
        Link:
          D:\vs2013\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.dll" /INCREMENTAL /NOLOGO opencv_ts300d.lib opencv_world300d.lib halconcpp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.lib" /MACHINE:X64 /DLL x64\Debug\BrightLineHelper.obj
          x64\Debug\dllmain.obj
@@ -62,9 +72,10 @@
          x64\Debug\ImgTransform.obj
          x64\Debug\IVImageProcess.obj
          x64\Debug\stdafx.obj
+            正在创建库 E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.lib 和对象 E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.exp
          imageProcessDLL.vcxproj -> E:\滨江富士康电路板检测\imageProcessDLL\x64\Debug\imageProcessDLL.dll
-     1>已完成生成项目“E:\滨江富士康电路板检测\imageProcessDLL\imageProcessDLL\imageProcessDLL.vcxproj”(Build 个目标)的操作。
+     1>已完成生成项目“E:\滨江富士康电路板检测\imageProcessDLL\imageProcessDLL\imageProcessDLL.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:12.29
+已用时间 00:00:09.03
