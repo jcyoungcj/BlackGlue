@@ -103,7 +103,7 @@ extern"C" __declspec(dllexport)  int getImageMagnification1(
 
 	// Local iconic variables 
 	Hobject  Image, Region, RegionOpening, ConnectedRegions;
-	Hobject  SelectedRegions, Contours;
+	Hobject  SelectedRegions, Contours,  ContCircle;
 
 	// Local control variables 
 	HTuple  area, row, column, NumberCircles;
@@ -125,9 +125,10 @@ extern"C" __declspec(dllexport)  int getImageMagnification1(
 	area_center(SelectedRegions, &area, &row, &column);
 
 	count_obj(Contours, &NumberCircles);
-	fit_circle_contour_xld(Contours, "algebraic", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
+	fit_circle_contour_xld(Contours, "atukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
 		&StartPhi, &EndPhi, &PointOrder);
-
+	gen_circle_contour_xld(&ContCircle, Row, Column, Radius, 0, HTuple(360).Rad(),
+		"positive", 1.0);
 	if (0 != (NumberCircles<1))
 	{
 		Maxdiameter = 0;
