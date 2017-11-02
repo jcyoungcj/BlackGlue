@@ -6,7 +6,7 @@ using namespace cv;
 
 void main(){
 		//clock_t start = clock();
-		Mat ho_Image = imread("E:/滨江富士康电路板检测/圆孔图像/10.png");
+		Mat ho_Image = imread("E:/滨江富士康电路板检测/圆孔图像/mag.bmp");
 		clock_t mark = clock();
 		int magnification;
 		int mag = 3;				//已知直径，微米		

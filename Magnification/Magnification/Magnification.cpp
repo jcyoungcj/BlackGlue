@@ -21,7 +21,7 @@ using namespace Halcon;
 
 //extern"C" __declspec(dllexport)  int getImageMagnification1(
 //	IN cv::Mat& inImage,                            // 用来测定放大率的源图片
-//	IN int diameter,							   //已知圆直径 （米）
+//	IN int diameter,							   //已知圆直径 （微米）
 //	IN MagPara1 magPara1,							  // 放大率计算算法的输入参数
 //	OUT int & magnification                       // 系统的图像放大率，单位：像素/米
 //	)
@@ -76,7 +76,7 @@ using namespace Halcon;
 //	}
 //
 //	double d = Mindiameter[0].D();
-//	magnification = (int)d / (diameter*0.001);
+//	magnification = (int)d / (diameter*0.000001);
 //	if (magnification == 0){
 //		return 0;
 //		magnification = 0;							//放大倍率初始化值，需要修改
@@ -87,7 +87,7 @@ using namespace Halcon;
 
 extern"C" __declspec(dllexport)  int getImageMagnification1(
 	IN cv::Mat& inImage,                            // 用来测定放大率的源图片
-	IN int diameter,							   //已知圆直径 （米）
+	IN int diameter,							   //已知圆直径 （微米）
 	IN MagPara1 magPara1,							  // 放大率计算算法的输入参数
 	OUT int & magnification                       // 系统的图像放大率，单位：像素/米
 	)
@@ -165,7 +165,7 @@ extern"C" __declspec(dllexport)  int getImageMagnification2(
 
 	// Local iconic variables 
 	Hobject  Image, Region, RegionOpening, ConnectedRegions;
-	Hobject  SelectedRegions, Contours;
+	Hobject  SelectedRegions, Contours, ContCircle;
 
 	// Local control variables 
 	HTuple  area, row, column, NumberCircles;
@@ -187,8 +187,10 @@ extern"C" __declspec(dllexport)  int getImageMagnification2(
 	area_center(SelectedRegions, &area, &row, &column);
 
 	count_obj(Contours, &NumberCircles);
-	fit_circle_contour_xld(Contours, "algebraic", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
+	fit_circle_contour_xld(Contours, "atukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
 		&StartPhi, &EndPhi, &PointOrder);
+	gen_circle_contour_xld(&ContCircle, Row, Column, Radius, 0, HTuple(360).Rad(),
+		"positive", 1.0);
 
 	if (0 != (NumberCircles<1))
 	{
@@ -231,10 +233,8 @@ extern"C" __declspec(dllexport)  int getImageMagnification(
 		getImageMagnification1(inImage, diameter, magPara.magPara1, magnification);
 		break;
 	case 2:
-		getImageMagnification2(inImage, diameter, magPara, magnification);
+		getImageMagnification2(inImage, diameter, magPara, magnification); //自适应
 		break;
-	//case 3 :
-	//	getImageMagnification3(inImage, diameter, magPara, magnification);
 	default:
 		break;
 	}

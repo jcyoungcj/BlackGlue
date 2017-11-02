@@ -1,4 +1,4 @@
-﻿生成启动时间为 2017/10/21 15:20:06。
+﻿生成启动时间为 2017/11/2 13:50:49。
      1>项目“E:\滨江富士康电路板检测\Magnification\Magnification\Magnification.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>ClCompile:
          D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D MAGNIFICATION_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Debug\Magnification.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
@@ -10,9 +10,8 @@
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>Magnification.cpp(78): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>Magnification.cpp(148): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-     1>Magnification.cpp(210): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>Magnification.cpp(150): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>Magnification.cpp(214): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
          ImgTransform.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
@@ -22,9 +21,9 @@
      1>ImgTransform.cpp(56): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
      1>ImgTransform.cpp(57): warning C4244: “=”: 从“Hlong”转换到“int”，可能丢失数据
          正在生成代码...
-     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(239): warning C4715: “getImageMagnification”: 不是所有的控件路径都返回值
-     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(153): warning C4715: “getImageMagnification2”: 不是所有的控件路径都返回值
-     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(215): warning C4715: “getImageMagnification3”: 不是所有的控件路径都返回值
+     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(241): warning C4715: “getImageMagnification”: 不是所有的控件路径都返回值
+     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(219): warning C4715: “getImageMagnification2”: 不是所有的控件路径都返回值
+     1>e:\滨江富士康电路板检测\magnification\magnification\magnification.cpp(155): warning C4715: “getImageMagnification1”: 不是所有的控件路径都返回值
        Link:
          D:\vs2013\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\滨江富士康电路板检测\Magnification\x64\Debug\Magnification.dll" /INCREMENTAL /NOLOGO opencv_ts300d.lib opencv_world300d.lib halconcpp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\滨江富士康电路板检测\Magnification\x64\Debug\Magnification.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\滨江富士康电路板检测\Magnification\x64\Debug\Magnification.lib" /MACHINE:X64 /DLL x64\Debug\dllmain.obj
          x64\Debug\ImgTransform.obj
@@ -36,4 +35,4 @@
 
 生成成功。
 
-已用时间 00:00:03.30
+已用时间 00:00:04.01
