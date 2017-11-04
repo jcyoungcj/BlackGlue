@@ -53,9 +53,16 @@ int DetectBrightLine_1(Mat& src, IVRectangle rect, BrightLinePara1& para, Bright
 		std::sort(vcs.begin(), vcs.end(), [](const vector<Point>& left, const vector<Point>& right) {
 			return contourArea(left) > contourArea(right);
 		});
-		res.arrContours[0].rectBounding = boundingRect(vcs[0]);
-		res.arrContours[0].fArea = contourArea(vcs[0]);
-		res.arrSize = 1;
+		int ss = BrightLineResults::maxSize > vcs.size() ? vcs.size() : BrightLineResults::maxSize;
+		res.arrSize = 0;
+		for (int i = 0; i < ss; i++)
+		{
+			res.arrContours[i].rectBounding = boundingRect(vcs[i]);
+			res.arrContours[i].fArea = contourArea(vcs[i]);
+			res.arrSize++;
+		}
+
+		
 	}
 	return 0;
 }

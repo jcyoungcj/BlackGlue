@@ -54,16 +54,19 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	HTuple  hv_outRaw, hv_outColumn;
 
 	//1. 获取矩形区域图像
-	Mat rectInImage;
-	getRectRegion(inImage, rectangle, rectInImage);
+	Mat rectInImage, rectInImage1;
+	getRectRegion(inImage, rectangle, rectInImage1);
+	rectInImage1.copyTo(rectInImage);
+
 
 	//改变亮度
-	for (int y = 0; y < rectInImage.rows;y++){
-		for (int x = 0; x < rectInImage.cols;x++){
-			rectInImage.at<Vec3b>(y,x)[3] = 0;
-		}
-	
-	}
+
+	//for (int y = 0; y < rectInImage.rows;y++){
+	//	for (int x = 0; x < rectInImage.cols;x++){
+	//		rectInImage.at<Vec3b>(y,x)[3] = 0;
+	//	}
+	//
+	//}
 
 	//2.图像格式转换
 	ho_Image = MatToHImage(rectInImage);
@@ -87,7 +90,6 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	//输出定位坐标
 	if (0 != (hv_NumberCircles<1))
 	{
-
 		//hv_ResultText = "未检测到圆，请重新输入";
 		circleCentre.x = 0;
 		circleCentre.y = 0;
@@ -112,8 +114,9 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 #ifdef _DEBUG
 	Point p(circleCentre.x, circleCentre.y);
 	circle(rectInImage, p, 0, Scalar(0, 255, 0));
-	imshow("圆孔定位", rectInImage);
+	//imshow("圆孔定位", rectInImage);
 #endif
+
 	return ret;
 }
 
