@@ -60,9 +60,7 @@ int DetectBrightLine_1(Mat& src, IVRectangle rect, BrightLinePara1& para, Bright
 			res.arrContours[i].rectBounding = boundingRect(vcs[i]);
 			res.arrContours[i].fArea = contourArea(vcs[i]);
 			res.arrSize++;
-		}
-
-		
+		}		
 	}
 	return 0;
 }

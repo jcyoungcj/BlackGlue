@@ -23,18 +23,18 @@ void testBlack(){
 	IVRectangle rectangle = { point1, point2 };
 	AdhesiveResults adhesiveResults;
 	//---------------------------黑胶检测结果----------------------------------//
-	AdhesivePara adhesivePara = { 1, { 22, 196, 3.5 }, {} };
+	AdhesivePara adhesivePara = { 1, { 2, 52, 3.5 }, {} };
 	AdhesivePara adhesivePara2 = { 2, {}, { 1.0, 3.5 } };//bina
 	int i = 10;
-	while (1)
-	{
+	//while (1)
+//	{
 
 		clock_t b = clock();
 		getAdhesiveResults(ho_Image, rectangle, adhesivePara2, adhesiveResults);
 		clock_t black = clock();
 		cout << "黑胶检测1时间：" << (double)(black -b) << endl;
 		//i--;
-	}
+//	}
 	
 	clock_t black2 = clock();
 	waitKey();
@@ -97,10 +97,9 @@ void testBrightLine()
 void mark(){
 
 		//-------------------------------圆孔定位----------------------------------//
-		MarkPara makePara = {2.0,2.4,50,99999,20};
+		MarkPara makePara = {3.0,3.0,100,99999,20};
 		IVPoint circleCentre;
-		Mat ho_Image = imread("C:/Users/jcyoung/Desktop/20171009/2.bmp");
-	
+		Mat ho_Image = imread("E:\\滨江富士康电路板检测\\圆孔图像\\17.png");
 		IVPoint point1 = {0,0};
 		IVPoint point2 = { ho_Image.cols, ho_Image.rows };
 		IVRectangle rectangle = { point1, point2 };
@@ -108,7 +107,7 @@ void mark(){
 		getMarkLocation(ho_Image, rectangle, makePara, circleCentre);
 		clock_t mark = clock();
 		Point p(circleCentre.x, circleCentre.y);
-		circle(ho_Image, p, 0, Scalar(0, 255, 0));
+		circle(ho_Image, p, 1, Scalar(0, 255, 0));
 		imshow("圆孔定位",ho_Image);
 		cout << "mark时间：" << (double)(mark - read) << endl;
 		waitKey();
@@ -125,7 +124,7 @@ int main()
 	testBlack();
 
 //	//-------------------------------圆孔定位----------------------------------//
-	//mark();
+//	mark();
 	//---------------------------------图像放大率-----------------------------------//
 //	int magnification;
 //	int mag = 3;				//已知直径，微米

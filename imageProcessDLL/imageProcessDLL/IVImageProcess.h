@@ -20,7 +20,7 @@ typedef struct _IVPoint
 typedef struct _IVRectangle
 {
 	IVPoint topLeftPoint;                         // 矩形左上角的点
-	IVPoint bottomRightPoint;                // 矩形右上角的点
+	IVPoint bottomRightPoint;					 // 矩形右上角的点
 }IVRectangle;
 
 
@@ -88,8 +88,6 @@ typedef struct _AdhesiveResults
 /*****************************************************************************
 *  @brief    : 亮线检测结果
 *****************************************************************************/
-
-
 
 
 typedef struct _BrightLinePara1

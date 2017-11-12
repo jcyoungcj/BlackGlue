@@ -1,8 +1,6 @@
-﻿生成启动时间为 2017/10/26 17:27:30。
-     1>项目“E:\滨江富士康电路板检测\imageProcessDLL\IVTestFrame\IVTestFrame.vcxproj”在节点 3 上(Rebuild 个目标)。
+﻿生成启动时间为 2017/11/11 13:44:23。
+     1>项目“E:\滨江富士康电路板检测\imageProcessDLL\IVTestFrame\IVTestFrame.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\IVTestFrame.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
-         stdafx.cpp
          D:\vs2013\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\IVTestFrame.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt IVTestFrame.cpp
          IVTestFrame.cpp
      1>D:\opencv3.0.0\opencv\build\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
@@ -11,9 +9,11 @@
        Link:
          D:\vs2013\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Release\IVTestFrame.exe" /INCREMENTAL:NO /NOLOGO imageProcessDLL.lib opencv_ts300.lib opencv_world300.lib halconcpp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Release\IVTestFrame.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\滨江富士康电路板检测\imageProcessDLL\x64\Release\IVTestFrame.lib" /MACHINE:X64 x64\Release\IVTestFrame.obj
          x64\Release\stdafx.obj
-     1>LINK : fatal error LNK1181: 无法打开输入文件“imageProcessDLL.lib”
-     1>已完成生成项目“E:\滨江富士康电路板检测\imageProcessDLL\IVTestFrame\IVTestFrame.vcxproj”(Rebuild 个目标)的操作 - 失败。
+         正在生成代码
+         已完成代码的生成
+         IVTestFrame.vcxproj -> E:\滨江富士康电路板检测\imageProcessDLL\x64\Release\IVTestFrame.exe
+     1>已完成生成项目“E:\滨江富士康电路板检测\imageProcessDLL\IVTestFrame\IVTestFrame.vcxproj”(Build 个目标)的操作。
 
-生成失败。
+生成成功。
 
-已用时间 00:00:01.74
+已用时间 00:00:01.60

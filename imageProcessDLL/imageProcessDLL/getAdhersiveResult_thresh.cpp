@@ -29,7 +29,9 @@ int getAdhersiveResult_thresh(
 	// ‰»Î≤Œ ˝≈–∂œ
 	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
 		rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y>inImage.rows 
+		rectangle.bottomRightPoint.y>inImage.rows || adhesivePara.algorithmID != 1 ||
+		(rectangle.bottomRightPoint.x - rectangle.topLeftPoint.x == 0) ||
+		(rectangle.bottomRightPoint.y - rectangle.topLeftPoint.y == 0)
 		){
 		ret = -1; return ret;
 	}
@@ -51,6 +53,10 @@ int getAdhersiveResult_thresh(
 	Mat rectInImage, rectInImage1;
 	getRectRegion(inImage, rectangle, rectInImage1);
 	rectInImage1.copyTo(rectInImage);
+	if (rectInImage.channels() != 3){
+		ret = -1; return ret;
+	}
+
 
 	int width = rectInImage.cols;
 	int height = rectInImage.rows;
@@ -86,25 +92,12 @@ int getAdhersiveResult_thresh(
 	Image = MatToHImage(rectInImage);
 
 
-
-	// œ‘ æÕº∆¨
-	//get_image_size(Image, &Width, &Height);
-	//if (HDevWindowStack::IsOpen())
-	//	close_window(HDevWindowStack::Pop());
-	//set_window_attr("background_color", "black");
-	//open_window(0, 0, Width, Height, 0, "", "", &WindowHandle);
-	//HDevWindowStack::Push(WindowHandle);
-
-	//if (HDevWindowStack::IsOpen())
-	//	set_color(HDevWindowStack::GetActive(), "red");
-	//if (HDevWindowStack::IsOpen())
-	//	disp_obj(Image, HDevWindowStack::GetActive());
-
-
 	rgb1_to_gray(Image, &Image);
-	derivate_gauss(Image, &Image, 1, "none");
-	threshold(Image, &LightRegion, 5, 27);
-	//threshold(Image, &LightRegion, adhesivePara.adhesivePara1.minThreshold, adhesivePara.adhesivePara1.maxThreshold);
+	gauss_image(Image, &Image, 3);
+	//threshold(Image, &LightRegion, 5, 27);
+	//if (adhesivePara.adhesivePara1.minThreshold <= 0)
+	//	return -1;
+	threshold(Image, &LightRegion, adhesivePara.adhesivePara1.minThreshold, adhesivePara.adhesivePara1.maxThreshold);
 
 
 	//œ»∏Ø ¥≈Ú’Õ
@@ -183,7 +176,25 @@ int getAdhersiveResult_thresh(
 	}
 
 #ifdef _DEBUG
-	int bb = 2;// adhesiveResults.adhesiveBlack.connectionNum;
+	/*halconÕºœÒœ‘ æ*/
+	//Halcon::get_image_size(Image, &Width, &Height);
+	//if (HDevWindowStack::IsOpen())
+	//	Halcon::close_window(HDevWindowStack::Pop());
+	//Halcon::set_window_attr("background_color", "black");
+	//Halcon::open_window(0, 0, Width, Height, 0, "", "", &WindowHandle);
+	//HDevWindowStack::Push(WindowHandle);
+
+	//if (HDevWindowStack::IsOpen())
+	//	set_color(HDevWindowStack::GetActive(), "red");
+	//if (HDevWindowStack::IsOpen())
+	//	Halcon::disp_obj(Image, HDevWindowStack::GetActive());
+	//	Halcon::disp_obj(rs, HDevWindowStack::GetActive());
+
+	//Sleep(1500);
+	//Halcon::close_window(HDevWindowStack::Pop());
+	
+	/* opencvª≠‘≤ */
+	int bb = adhesiveResults.adhesiveBlack.connectionNum;			// adhesiveResults.adhesiveBlack.connectionNum;
 	while (bb){
 		Rect r(cv::Point(adhesiveResults.adhesiveBlack.pRectangle[bb - 1].topLeftPoint.x - rectangle.topLeftPoint.x,
 			adhesiveResults.adhesiveBlack.pRectangle[bb - 1].topLeftPoint.y - rectangle.topLeftPoint.y),
@@ -203,9 +214,10 @@ int getAdhersiveResult_thresh(
 		cv::rectangle(rectInImage, r, Scalar(0, 255, 0), 2);
 		ww--;
 	}
-
-	imwrite("D:\\ou_thresh.jpg", rectInImage);
+	
+//	cv::imwrite("D://glue_thresh.bmp", rectInImage);
 
 #endif
+
 	return 0;
 }

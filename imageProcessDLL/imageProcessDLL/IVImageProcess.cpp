@@ -10,7 +10,7 @@ using namespace cv;
 using namespace std;
 using namespace Halcon;
 
-//// 图像放大率计算
+// 图像放大率计算
 
 
 // 圆孔位置返回
@@ -39,7 +39,137 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	//参数判断
 	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
 		rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y>inImage.rows
+		rectangle.bottomRightPoint.y>inImage.rows ||
+		(rectangle.bottomRightPoint.x - rectangle.topLeftPoint.x == 0) ||
+		(rectangle.bottomRightPoint.y - rectangle.topLeftPoint.y == 0)
+		){
+		ret = -1; return ret;
+	}
+
+	// Local iconic variables
+	Hobject  ho_Image, Image, ho_Edges, ho_SelectedContours, Red, Green, Blue;
+	Hobject  ho_UnionContours;
+	// Local control variables
+	HTuple  hv_NumberCircles, WindowHandle;
+	HTuple  hv_Row, hv_Column, hv_Radius, hv_StartPhi, hv_EndPhi;
+	HTuple  hv_PointOrder, hv_MaxRadius, hv_i;
+	HTuple  hv_outRaw, hv_outColumn, Width, Height;
+
+	//1. 获取矩形区域图像
+	Mat rectInImage, rectInImage1;
+	getRectRegion(inImage, rectangle, rectInImage1);
+	rectInImage1.copyTo(rectInImage);
+	if (rectInImage.channels() != 3){
+		ret = -1; return ret;
+	}
+
+
+	//2.图像格式转换
+	ho_Image = MatToHImage(rectInImage);
+	decompose3(ho_Image, &Red, &Green, &Blue);
+	gauss_image(Blue, &Image, makePara.sigma);
+	emphasize(Image, &Image, 7, 7, 2.0);
+	gauss_image(Image, &Image, makePara.sigma);
+
+	edges_sub_pix(Image, &ho_Edges, "canny", makePara.alpha, 20, 56);
+
+	//合并在同圆的XLD
+	union_cocircular_contours_xld(ho_Edges, &ho_Edges, 0.5, 0.1, 0.2, 30, 10, 10, "true", 1);
+	//根据以下参数筛选轮廓 长度，方向，曲率，封闭（第三个参数）
+	select_contours_xld(ho_Edges, &ho_SelectedContours, "contour_length", makePara.minGirth, makePara.maxGirth, -0.5, 0.5);
+	union_cocircular_contours_xld(ho_SelectedContours, &ho_SelectedContours, 1.6, 0.9, 0.9, 30, 40, 40, "true", 1);
+	select_contours_xld(ho_SelectedContours, &ho_SelectedContours, "closed", 0, makePara.maxLackGirth, 0, 0);
+
+	//合并重叠轮廓,主要把共线的轮廓合并在一起
+	union_cocircular_contours_xld(ho_SelectedContours, &ho_UnionContours, 1.6, 0.9, 0.9, 30, 40, 40, "true", 1);
+
+	//计算圆的个数
+	count_obj(ho_UnionContours, &hv_NumberCircles);
+
+	//获取圆心坐标  对单个轮廓做圆逼近；fit_eclipse 拟合椭圆
+	fit_circle_contour_xld(ho_SelectedContours, "algebraic", -1, 0, 0, 10, 2, &hv_Row, &hv_Column, &hv_Radius, &hv_StartPhi, &hv_EndPhi, &hv_PointOrder);
+	//输出定位坐标
+	if (0 != (hv_NumberCircles<1))
+	{
+		circleCentre.x = 0;
+		circleCentre.y = 0;
+		ret = -1;
+	}
+	else
+	{
+		tuple_max(hv_Radius, &hv_MaxRadius);
+		//HTuple end_val58 = hv_NumberCircles;
+		//HTuple step_val58 = 1;
+		for (hv_i = 0; hv_i <= hv_NumberCircles - 1; hv_i += 1)
+		{
+			if (0 != (HTuple(hv_Radius[hv_i]) == hv_MaxRadius))
+			{
+				hv_outRaw = hv_Row[hv_i];
+				circleCentre.y = hv_outRaw[0].D() + rectangle.topLeftPoint.y;
+				hv_outColumn = hv_Column[hv_i];
+				circleCentre.x = hv_outColumn[0].D() + rectangle.topLeftPoint.x;
+			}
+		}
+	}
+#ifdef _DEBUG
+	/*halcon图像显示*/
+	//Halcon::get_image_size(ho_Image, &Width, &Height);
+	//if (HDevWindowStack::IsOpen())
+	//	Halcon::close_window(HDevWindowStack::Pop());
+	//Halcon::set_window_attr("background_color", "black");
+	//Halcon::open_window(0, 0, Width / 10, Height / 10, 0, "", "", &WindowHandle);
+	//HDevWindowStack::Push(WindowHandle);
+
+	//if (HDevWindowStack::IsOpen())
+	//	set_color(HDevWindowStack::GetActive(), "red");
+	//if (HDevWindowStack::IsOpen())
+	//	Halcon::disp_obj(Image, HDevWindowStack::GetActive());
+	//	Halcon::disp_obj(ho_SelectedContours, HDevWindowStack::GetActive());
+	//Sleep(500);
+	//Halcon::close_window(HDevWindowStack::Pop());
+	
+	/*opencv显示*/
+
+	//Point p(circleCentre.x, circleCentre.y);
+	//circle(rectInImage, p, 0, Scalar(0, 255, 0));
+	//imshow("圆孔定位", rectInImage);
+	//Sleep(1000);
+
+#endif
+
+	return ret;
+
+
+
+
+
+}
+
+extern"C" __declspec(dllexport)  int getMarkLocation2(
+	IN Mat& inImage,								// 拼接后的大图片
+	IN IVRectangle rectangle,                      // 输入的矩形区域
+	IN MarkPara makePara,					      // 圆孔（mark）检测对应的输入参数
+	OUT IVPoint & circleCentre		             // 返回圆心坐标
+	)
+{
+	int ret = 0;
+	//矩形坐标校正
+	if (rectangle.topLeftPoint.x > rectangle.bottomRightPoint.x) {
+		int tmp1 = rectangle.topLeftPoint.x;
+		rectangle.topLeftPoint.x = rectangle.bottomRightPoint.x;
+		rectangle.bottomRightPoint.x = tmp1;
+	}
+	if (rectangle.topLeftPoint.y > rectangle.bottomRightPoint.y) {
+		int tmp1 = rectangle.topLeftPoint.y;
+		rectangle.topLeftPoint.y = rectangle.bottomRightPoint.y;
+		rectangle.bottomRightPoint.y = tmp1;
+	}
+	//参数判断
+	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
+		rectangle.bottomRightPoint.x>inImage.cols ||
+		rectangle.bottomRightPoint.y>inImage.rows || 
+		(rectangle.bottomRightPoint.x - rectangle.topLeftPoint.x==0) ||
+		(rectangle.bottomRightPoint.y - rectangle.topLeftPoint.y == 0)
 		){
 		ret = -1; return ret;
 	}
@@ -57,7 +187,9 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	Mat rectInImage, rectInImage1;
 	getRectRegion(inImage, rectangle, rectInImage1);
 	rectInImage1.copyTo(rectInImage);
-
+	if (rectInImage.channels()!=3){
+		ret = -1; return ret;
+	}
 
 	//改变亮度
 
@@ -71,7 +203,8 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	//2.图像格式转换
 	ho_Image = MatToHImage(rectInImage);
 	rgb1_to_gray(ho_Image, &ho_Image);
-	derivate_gauss(ho_Image, &ho_Image, makePara.sigma, "none");
+	gauss_image(ho_Image, &ho_Image, makePara.sigma);
+	//derivate_gauss(ho_Image, &ho_Image, makePara.sigma, "none");
 	edges_sub_pix(ho_Image, &ho_Edges, "canny", makePara.alpha, 20, 40);
 	//alpha:参数指定值越小,平滑越强大,会减少边缘细节,cannay 相反0.9
 
@@ -113,10 +246,9 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	}
 #ifdef _DEBUG
 	Point p(circleCentre.x, circleCentre.y);
-	circle(rectInImage, p, 0, Scalar(0, 255, 0));
+	cv::circle(rectInImage, p, 0, Scalar(0, 255, 0));
 	//imshow("圆孔定位", rectInImage);
 #endif
-
 	return ret;
 }
 
@@ -151,18 +283,18 @@ extern"C" __declspec(dllexport)  int affineImage(
 	HTuple  hv_RowSource, hv_ColumnSource;
 	HTuple  hv_RowTarget, hv_ColumnTarget, hv_HomMat2D;
 	//Input affine transformation
-	hv_RowSource[0] = affinePara.originPoint1.y;
-	hv_RowSource[1] = affinePara.originPoint2.y;
-	hv_RowSource[2] = affinePara.originPoint3.y;
-	hv_ColumnSource[0] = affinePara.originPoint1.x;
-	hv_ColumnSource[1] = affinePara.originPoint2.x;
-	hv_ColumnSource[2] = affinePara.originPoint3.x;
-	hv_RowTarget[0] = affinePara.newPoint1.y;
-	hv_RowTarget[1] = affinePara.newPoint2.y;
-	hv_RowTarget[2] = affinePara.newPoint3.y;
-	hv_ColumnTarget[0] = affinePara.newPoint1.x;
-	hv_ColumnTarget[1] = affinePara.newPoint2.x;
-	hv_ColumnTarget[2] = affinePara.newPoint3.x;
+	hv_RowTarget[0] = affinePara.originPoint1.y;
+	hv_RowTarget[1] = affinePara.originPoint2.y;
+	hv_RowTarget[2] = affinePara.originPoint3.y;
+	hv_ColumnTarget[0] = affinePara.originPoint1.x;
+	hv_ColumnTarget[1] = affinePara.originPoint2.x;
+	hv_ColumnTarget[2] = affinePara.originPoint3.x;
+	hv_RowSource[0] = affinePara.newPoint1.y;
+	hv_RowSource[1] = affinePara.newPoint2.y;
+	hv_RowSource[2] = affinePara.newPoint3.y;
+	hv_ColumnSource[0] = affinePara.newPoint1.x;
+	hv_ColumnSource[1] = affinePara.newPoint2.x;
+	hv_ColumnSource[2] = affinePara.newPoint3.x;
 	ho_Image = MatToHImage(inImage);
 	//Determine affine transformation from input points
 	vector_to_hom_mat2d(hv_RowSource, hv_ColumnSource, hv_RowTarget,

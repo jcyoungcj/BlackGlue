@@ -9,7 +9,7 @@
 #include "IVMagnificationDLL.h"
 #include "Halconcpp.h"
 #include "ImgTransform.h"
-
+#include "opencv2/opencv.hpp"
 
 //using namespace std;
 using namespace Halcon;
@@ -110,6 +110,7 @@ extern"C" __declspec(dllexport)  int getImageMagnification1(
 	HTuple  Row, Column, Radius, StartPhi, EndPhi, PointOrder;
 	HTuple  Maxdiameter, Mindiameter, MaxRadius, MinRadius;
 	HTuple  i;
+	HTuple  Width, Height, WindowHandle, WindowID;
 
 	//格式转换
 	Image = MatToHImage(inImage);
@@ -119,13 +120,15 @@ extern"C" __declspec(dllexport)  int getImageMagnification1(
 //	opening_circle(Region, &RegionOpening, 6);
 	opening_circle(Region, &RegionOpening, magPara1.Openradius);
 	connection(RegionOpening, &ConnectedRegions);
-//	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", 500, 3000000);
-	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", magPara1.minArea, 300000000);
+	area_center(ConnectedRegions, &area, &row, &column);
+	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", area.Max(), (area.Max()) + 999999999);
+//	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", magPara1.minArea, 300000000);
 	gen_contour_region_xld(SelectedRegions, &Contours, "border");
 	area_center(SelectedRegions, &area, &row, &column);
 
 	count_obj(Contours, &NumberCircles);
-	fit_circle_contour_xld(Contours, "atukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
+	// geotukey 'algebraic', 'ahuber', 'atukey', 'geometric', 'geohuber', 'geotukey' 
+	fit_circle_contour_xld(Contours, "geotukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
 		&StartPhi, &EndPhi, &PointOrder);
 	gen_circle_contour_xld(&ContCircle, Row, Column, Radius, 0, HTuple(360).Rad(),
 		"positive", 1.0);
@@ -149,6 +152,33 @@ extern"C" __declspec(dllexport)  int getImageMagnification1(
 	}
 	double d = Mindiameter[0].D();
 	magnification = (int)d / (diameter*0.000001);
+#ifdef _DEBUG
+	/*halcon图像显示*/
+	//get_image_size(Image, &Width, &Height);
+	//if (HDevWindowStack::IsOpen())
+	//	close_window(HDevWindowStack::Pop());
+	//set_window_attr("background_color", "black");
+	//open_window(0, 0, Width/10, Height/10, 0, "", "", &WindowHandle);
+	//HDevWindowStack::Push(WindowHandle);
+
+	//if (HDevWindowStack::IsOpen())
+	//	set_color(HDevWindowStack::GetActive(), "red");
+	//if (HDevWindowStack::IsOpen())
+	//	disp_obj(Image, HDevWindowStack::GetActive());
+	//	disp_obj(ContCircle, HDevWindowStack::GetActive());
+	//Sleep(2000);
+	//close_window(HDevWindowStack::Pop());
+
+	/*opencv画圆*/
+	cv::circle(inImage, cvPoint(Column[0].I(), Row[0].I()), d / 2, cv::Scalar(0, 0, 255), 10);
+	//cv::namedWindow("circle", CV_WINDOW_NORMAL);
+	//cv::resizeWindow("circle", 200, 200);
+	//cv::imshow("circle", inImage);
+	//Sleep(3000);
+	cv::imwrite("D://circle.bmp", inImage);
+
+#endif
+
 	if (magnification == 0){
 		return 0;
 	}
@@ -173,7 +203,7 @@ extern"C" __declspec(dllexport)  int getImageMagnification2(
 	HTuple  Row, Column, Radius, StartPhi, EndPhi, PointOrder;
 	HTuple  Maxdiameter, Mindiameter, MaxRadius, MinRadius;
 	HTuple  i;
-
+	HTuple  Width, Height, WindowHandle, WindowID;
 	//格式转换
 	Image = MatToHImage(inImage);
 	derivate_gauss(Image, &Image, 2.5, "none");
@@ -183,12 +213,14 @@ extern"C" __declspec(dllexport)  int getImageMagnification2(
 	//	opening_circle(Region, &RegionOpening, 6);
 	opening_circle(Region, &RegionOpening, 6);
 	connection(RegionOpening, &ConnectedRegions);
-	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", 300, 300000000);
+	area_center(ConnectedRegions, &area, &row, &column);
+	select_shape(ConnectedRegions, &SelectedRegions, "area", "and", area.Max(), (area.Max()) + 999999999);
+	//select_shape(ConnectedRegions, &SelectedRegions, "area", "and", 300, 300000000);
 	gen_contour_region_xld(SelectedRegions, &Contours, "border");
 	area_center(SelectedRegions, &area, &row, &column);
 
 	count_obj(Contours, &NumberCircles);
-	fit_circle_contour_xld(Contours, "atukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
+	fit_circle_contour_xld(Contours, "geotukey", -1, 0, 0, 10, 2, &Row, &Column, &Radius,
 		&StartPhi, &EndPhi, &PointOrder);
 	gen_circle_contour_xld(&ContCircle, Row, Column, Radius, 0, HTuple(360).Rad(),
 		"positive", 1.0);
@@ -212,18 +244,46 @@ extern"C" __declspec(dllexport)  int getImageMagnification2(
 		}
 	}
 	double d = Mindiameter[0].D();
+	int dd = Mindiameter[0].I();
 	magnification = (int)d / (diameter*0.000001);
+#ifdef _DEBUG
+	/*halcon图像显示*/
+	//get_image_size(Image, &Width, &Height);
+	//if (HDevWindowStack::IsOpen())
+	//	close_window(HDevWindowStack::Pop());
+	//set_window_attr("background_color", "black");
+	//open_window(0, 0, Width / 10, Height / 10, 0, "", "", &WindowHandle);
+	//HDevWindowStack::Push(WindowHandle);
+
+	//if (HDevWindowStack::IsOpen())
+	//	set_color(HDevWindowStack::GetActive(), "red");
+	//if (HDevWindowStack::IsOpen())
+	//	disp_obj(Image, HDevWindowStack::GetActive());
+	//disp_obj(ContCircle, HDevWindowStack::GetActive());
+	//Sleep(1000);
+	//close_window(HDevWindowStack::Pop());
+
+	/*opencv画圆*/
+	cv::circle(inImage, cvPoint(Column[0].I(), Row[0].I()), d / 2, cv::Scalar(0, 0, 255), 10);
+	//cv::namedWindow("circle", CV_WINDOW_NORMAL);
+	//cv::resizeWindow("circle", 200, 200);
+	//cv::imshow("circle", inImage);
+	//Sleep(3000);
+	cv::imwrite("D://circle.bmp", inImage);
+
+#endif
+
 	if (magnification == 0){
 		return 0;
 	}
-
 }
+
 
 extern"C" __declspec(dllexport)  int getImageMagnification(
 	IN cv::Mat& inImage,                            // 用来测定放大率的源图片
 	IN int diameter,							   //已知圆直径 （微米）
 	IN MagPara magPara,							  // 放大率计算算法的输入参数
-	OUT int & magnification                       // 系统的图像放大率，单位：像素/米
+	OUT int & magnification                      // 系统的图像放大率，单位：像素/米
 	)
 {
 	if (inImage.empty() || diameter == 0){ return -1; }
