@@ -1,13 +1,64 @@
 #include "getAdhersiveResult_thresh.h"
 #include "getRectRegion.h"
-#include <opencv2\highgui\highgui.hpp> 
-#include <opencv2\opencv.hpp>
-
+#include <opencv2/highgui/highgui.hpp> 
+#include <opencv2/opencv.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include <vector>
+#include "direct.h"
 using namespace Halcon;
 using namespace cv;
-// 阈值分割法黑胶检测
+using namespace std;
+
+#define MIN_NON_UF_PATCH_AREA (100)
+void non_uf_detect(const Mat& image,Rect roi,uchar thr,vector<Rect>& uf_rgn,vector<float>& uf_area)
+{
+	vector<vector<Point>> vcs;
+	Mat non_uf_gray;
+	Mat non_uf_bin, non_uf_normal_bin;
+	Mat non_uf_color = image(roi);
+	cvtColor(non_uf_color,non_uf_gray,CV_RGB2GRAY);
+	threshold(non_uf_gray,non_uf_bin,thr,255,THRESH_BINARY_INV);
+	erode(non_uf_bin,non_uf_bin,getStructuringElement(MORPH_RECT,Size(5,5)));
+	dilate(non_uf_bin, non_uf_bin, getStructuringElement(MORPH_RECT, Size(5, 5)));
+	findContours(non_uf_bin,vcs,RETR_EXTERNAL,CHAIN_APPROX_SIMPLE);
+	if (vcs.size()>0){
+		std::sort(vcs.begin(), vcs.end(), [](const vector<Point>&left, const vector<Point>&right){
+			return contourArea(left) > contourArea(right); });
+	
+
+#if _DEBUG
+	_mkdir("uf");
+	Mat partimage = image(roi).clone();
+#endif
+    
+		for (int i = 0; i < (int)vcs.size();++i){ 
+			Rect non_uf = boundingRect(vcs[i]);
+			float non_uf_arae = (float)contourArea(vcs[i]);
+			if (non_uf.width * non_uf.height < MIN_NON_UF_PATCH_AREA){ break; }
+			if (i == 100){ break; }
+			Rect uf_1;
+			uf_1.x = roi.x + non_uf.x;
+			uf_1.y = roi.y + non_uf.y;
+			uf_1.width = non_uf.width, uf_1.height = non_uf.height;
+			uf_rgn.push_back(uf_1);
+			uf_area.push_back(non_uf_arae);
+#if _DEBUG
+			drawContours(partimage,vcs,i,Scalar(0,0,255),CV_FILLED);
+#endif
+		}
+
+#if _DEBUG
+		//imshow("white", partimage);
+		//waitKey();
+#endif
+
+	}
+
+	return;
+}
+
 /*****************************************************************************
-*  @brief    : 黑胶检测结果返回
+*  @brief    : 无胶检测结果返回
 *****************************************************************************/
 int getAdhersiveResult_binary(
 	IN Mat& inImage,                              // 拼接后的大图片
@@ -37,10 +88,24 @@ int getAdhersiveResult_binary(
 		ret = -1; return ret;
 	}
 
+	vector<Rect> rgn;
+	vector<float> area;
+	Rect roi(rectangle.topLeftPoint.x,rectangle.topLeftPoint.y,
+		rectangle.bottomRightPoint.x-rectangle.topLeftPoint.x,rectangle.bottomRightPoint.y - rectangle.topLeftPoint.y);
+	non_uf_detect((const Mat&)inImage,roi,25,rgn,area);
+	adhesiveResults.adhesiveBlack.connectionNum = (int)rgn.size();
+	for(int i=0;i<(int)rgn.size();i++){
+		adhesiveResults.adhesiveBlack.pRectangle[i].topLeftPoint.x = rgn[i].x;
+		adhesiveResults.adhesiveBlack.pRectangle[i].topLeftPoint.y = rgn[i].y;
+		adhesiveResults.adhesiveBlack.pRectangle[i].bottomRightPoint.x = rgn[i].x + rgn[i].width;
+		adhesiveResults.adhesiveBlack.pRectangle[i].bottomRightPoint.y = rgn[i].y + rgn[i].height;
+		adhesiveResults.adhesiveBlack.pArea[i] = area[i];
+	}
+#if 0
 	// 方法一:直接调用 brightLine 
 	//二： 利用直方图
 	// Local iconic variables 
-	Hobject  Image, Red, Green, Blue, ImageGrayGaus;
+	Hobject  Image, ImageGrayGaus;
 	Hobject  DarkRegion, minblackArea, blackBoundary, blackBoundary2;
 	Hobject  Bigblack, innerWhite, innerWhiteImage, DarkRegion2;
 	Hobject  blackRect, out_black, Black_Rect, innerWhiteImage2;
@@ -68,7 +133,7 @@ int getAdhersiveResult_binary(
 
 	//2.图像格式转换
 	Image = MatToHImage(rectInImage);
-	decompose3(Image, &Red, &Green, &Blue);
+	//decompose3(Image, &Red, &Green, &Blue);
 	gauss_image(Image, &ImageGrayGaus, 3);
 	/*直方图*/
 	gray_histo(ImageGrayGaus, ImageGrayGaus, &AbsoluteHisto, &RelativeHisto);
@@ -81,21 +146,21 @@ int getAdhersiveResult_binary(
 	{
 		threshold(ImageGrayGaus, &DarkRegion, HTuple(MinThresh[0]), HTuple(MaxThresh[0]));
 	}
-//	threshold(ImageGrayGaus, &DarkRegion, HTuple(MinThresh[0]), HTuple(MaxThresh[0]));
-	
-	reduce_domain(Red, DarkRegion, &minblackArea);
+	threshold(ImageGrayGaus, &DarkRegion, HTuple(MinThresh[0]),42);
+	opening_circle(DarkRegion, &DarkRegion, 10);
+	reduce_domain(Image, DarkRegion, &minblackArea);
 	boundary(minblackArea, &blackBoundary, "inner_filled");
 
 	fill_up(blackBoundary, &blackBoundary2);
-	reduce_domain(Red, blackBoundary2, &Bigblack);
+	reduce_domain(Image, blackBoundary2, &Bigblack);
 
 	difference(Bigblack, minblackArea, &innerWhite);
-	reduce_domain(Red, innerWhite, &innerWhiteImage);
+	reduce_domain(Image, innerWhite, &innerWhiteImage);
 
 
 	//*******************黑胶区域********************************
 	connection(DarkRegion, &DarkRegion2);
-	select_shape(DarkRegion2, &DarkRegion2, "area", "and", 400, 999999999999);
+//	select_shape(DarkRegion2, &DarkRegion2, "area", "and", 400, 999999999999);
 	count_obj(DarkRegion2, &black_num);
 	area_center(DarkRegion2, &outBlackArea, &outBlackRow, &outBlackColumn);
 	//**********************************************排序有问题,zhengque
@@ -112,7 +177,7 @@ int getAdhersiveResult_binary(
 		adhesiveResults.adhesiveBlack.connectionNum = b;
 	}
 	for (i = 1; i <= black_num&& i<=100; i += 1)
-	{
+	{   
 		select_obj(DarkRegion2, &out_black, HTuple(BlackIndex[i - 1]) + 1);
 		area_center(out_black, &BlackArea, &BlackRow, &BlackColumn);
 		select_obj(blackRect, &Black_Rect, i);
@@ -160,6 +225,7 @@ int getAdhersiveResult_binary(
 #ifdef _DEBUG
 
 	/*halcon图像显示*/
+
 	//Halcon::get_image_size(Image, &Width, &Height);
 	//if (HDevWindowStack::IsOpen())
 	//	Halcon::close_window(HDevWindowStack::Pop());
@@ -173,9 +239,9 @@ int getAdhersiveResult_binary(
 	//	Halcon::disp_obj(Image, HDevWindowStack::GetActive());
 	//	Halcon::disp_obj(DarkRegion, HDevWindowStack::GetActive());
 
-	//Sleep(1500);
+	//Sleep(3000);
 	//Halcon::close_window(HDevWindowStack::Pop());
-
+	
 	/*opencv画圆*/
 	int bb = adhesiveResults.adhesiveBlack.connectionNum;
 	while (bb){
@@ -201,6 +267,7 @@ int getAdhersiveResult_binary(
 
 	//cv::imwrite("D://glue_bin.jpg", rectInImage);
 
+#endif
 #endif
 	return 0;
 

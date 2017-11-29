@@ -28,12 +28,22 @@ typedef struct _IVRectangle
 // 定位孔位置计算，输入参数
 typedef struct _MarkPara
 {
-	double alpha;									// canny算子   默认值： 2.0 ,1.0
-	double sigma;									// gauss	   默认值：2.4
-	int minGirth;									// 最小周长	   默认值：50
-	int maxGirth;									// 最大周长    默认值：99999
-	int maxLackGirth;								// 圆最大缺口  默认值：20
+	double alpha;									// canny算子   默认值： 2.0 ,1.0  可以删除
+	double sigma;									// gauss	   默认值：2.4     可以删除
+	int minGirth;									// 最小周长	   默认值：50     可以删除
+	int maxGirth;									// 最大周长    默认值：99999  可以删除
+	int maxLackGirth;								// 圆最大缺口  默认值：20    可以删除
 }MarkPara;
+
+/* 最细mark 参数
+typedef struct _MarkPara
+{
+	double circularity;								// 圆完整度	   默认值： 0.70
+
+}MarkPara;
+
+*/
+
 
 // 图像校正参数
 typedef struct _AffinePara
@@ -49,12 +59,12 @@ typedef struct _AffinePara
 // 黑胶检测参数
 typedef struct _AdhesiveThreshPara1
 {
-	int minThreshold;                      // 最小阈值      默认值：22
-	int maxThreshold;					  // 最大阈值		默认值：196
-	double openRadius;					 // 开运算半径		默认值：3.5
+	int minThreshold;                      // 最小阈值      默认值：	 可以删除
+	int maxThreshold;					  // 最大阈值		默认值：42
+	double openRadius;					 // 开运算半径		默认值：3.5  可以删除
 }AdhesiveThreshPara1;
 
-typedef struct _AdhesiveThreshPara2
+typedef struct _AdhesiveThreshPara2			//可以全部删除
 {
 	double sigma;						  // 高斯滤波算子   默认值：1
 	double openRadius;					 // 开运算半径      默认值：3.5

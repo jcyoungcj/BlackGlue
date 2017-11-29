@@ -45,16 +45,15 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 		){
 		ret = -1; return ret;
 	}
+	// Local iconic variables 
+	Hobject  Image, ImageGray, ImageThresh, RegionOpening;
+	Hobject  ConnectedRegions, Contours, ContCircle;
 
-	// Local iconic variables
-	Hobject  ho_Image, Image, ho_Edges, ho_SelectedContours, Red, Green, Blue;
-	Hobject  ho_UnionContours;
-	// Local control variables
-	HTuple  hv_NumberCircles, WindowHandle;
-	HTuple  hv_Row, hv_Column, hv_Radius, hv_StartPhi, hv_EndPhi;
-	HTuple  hv_PointOrder, hv_MaxRadius, hv_i;
-	HTuple  hv_outRaw, hv_outColumn, Width, Height;
 
+	// Local control variables 
+	HTuple  Width, Height, area, row, column, NumberCircles;
+	HTuple  outRaw, outColumn, Row, Column, Radius, StartPhi;
+	HTuple  EndPhi, PointOrder, MaxRadius, i;
 	//1. 获取矩形区域图像
 	Mat rectInImage, rectInImage1;
 	getRectRegion(inImage, rectangle, rectInImage1);
@@ -62,52 +61,46 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	if (rectInImage.channels() != 3){
 		ret = -1; return ret;
 	}
+	Image = MatToHImage(rectInImage);
+	get_image_size(Image, &Width, &Height);
 
+	rgb1_to_gray(Image, &ImageGray);
+	gauss_image(ImageGray, &ImageGray, 3);
+	threshold(ImageGray, &ImageThresh, 5, 50);
+	opening_circle(ImageThresh, &RegionOpening, 1);
+	connection(RegionOpening, &ConnectedRegions);
+	select_shape(ConnectedRegions, &ConnectedRegions, "circularity", "and", 0.7, 1);
+	select_shape(ConnectedRegions, &ConnectedRegions, "area", "and", 100, 3000000000);
+	area_center(ConnectedRegions, &area, &row, &column);
+	gen_contour_region_xld(ConnectedRegions, &Contours, "border");
+	select_contours_xld(Contours, &Contours, "contour_length", 100, 9999999, -0.5,0.5);
 
-	//2.图像格式转换
-	ho_Image = MatToHImage(rectInImage);
-	decompose3(ho_Image, &Red, &Green, &Blue);
-	gauss_image(Blue, &Image, makePara.sigma);
-	emphasize(Image, &Image, 7, 7, 2.0);
-	gauss_image(Image, &Image, makePara.sigma);
-
-	edges_sub_pix(Image, &ho_Edges, "canny", makePara.alpha, 20, 56);
-
-	//合并在同圆的XLD
-	union_cocircular_contours_xld(ho_Edges, &ho_Edges, 0.5, 0.1, 0.2, 30, 10, 10, "true", 1);
-	//根据以下参数筛选轮廓 长度，方向，曲率，封闭（第三个参数）
-	select_contours_xld(ho_Edges, &ho_SelectedContours, "contour_length", makePara.minGirth, makePara.maxGirth, -0.5, 0.5);
-	union_cocircular_contours_xld(ho_SelectedContours, &ho_SelectedContours, 1.6, 0.9, 0.9, 30, 40, 40, "true", 1);
-	select_contours_xld(ho_SelectedContours, &ho_SelectedContours, "closed", 0, makePara.maxLackGirth, 0, 0);
-
-	//合并重叠轮廓,主要把共线的轮廓合并在一起
-	union_cocircular_contours_xld(ho_SelectedContours, &ho_UnionContours, 1.6, 0.9, 0.9, 30, 40, 40, "true", 1);
-
-	//计算圆的个数
-	count_obj(ho_UnionContours, &hv_NumberCircles);
-
-	//获取圆心坐标  对单个轮廓做圆逼近；fit_eclipse 拟合椭圆
-	fit_circle_contour_xld(ho_SelectedContours, "algebraic", -1, 0, 0, 10, 2, &hv_Row, &hv_Column, &hv_Radius, &hv_StartPhi, &hv_EndPhi, &hv_PointOrder);
-	//输出定位坐标
-	if (0 != (hv_NumberCircles<1))
+	count_obj(Contours, &NumberCircles);
+	if (0 != (NumberCircles<1))
 	{
+		outRaw = 0;
+		outColumn = 0;
 		circleCentre.x = 0;
 		circleCentre.y = 0;
 		ret = -1;
 	}
 	else
 	{
-		tuple_max(hv_Radius, &hv_MaxRadius);
-		//HTuple end_val58 = hv_NumberCircles;
-		//HTuple step_val58 = 1;
-		for (hv_i = 0; hv_i <= hv_NumberCircles - 1; hv_i += 1)
+		fit_circle_contour_xld(Contours, "geotukey", -1, 0, 0, 10, 2, &Row, &Column,&Radius, &StartPhi, &EndPhi, &PointOrder);
+		//  ahuber   'algebraic'
+		//会报错 算法抄在纸上
+		gen_circle_contour_xld(&ContCircle, Row, Column, Radius, 0, HTuple(360).Rad(),
+			"positive", 1.0);
+
+		tuple_max(Radius, &MaxRadius);
+		for (i = 0; i <= NumberCircles - 1; i += 1)
 		{
-			if (0 != (HTuple(hv_Radius[hv_i]) == hv_MaxRadius))
+			if (0 != (HTuple(Radius[i]) == MaxRadius))
 			{
-				hv_outRaw = hv_Row[hv_i];
-				circleCentre.y = hv_outRaw[0].D() + rectangle.topLeftPoint.y;
-				hv_outColumn = hv_Column[hv_i];
-				circleCentre.x = hv_outColumn[0].D() + rectangle.topLeftPoint.x;
+				outRaw = Row[i];
+				outColumn = Column[i];
+				circleCentre.y = outRaw[0].D() + rectangle.topLeftPoint.y;
+				circleCentre.x = outColumn[0].D() + rectangle.topLeftPoint.x;
 			}
 		}
 	}
@@ -127,7 +120,7 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	//	Halcon::disp_obj(ho_SelectedContours, HDevWindowStack::GetActive());
 	//Sleep(500);
 	//Halcon::close_window(HDevWindowStack::Pop());
-	
+
 	/*opencv显示*/
 
 	//Point p(circleCentre.x, circleCentre.y);
@@ -136,121 +129,12 @@ extern"C" __declspec(dllexport)  int getMarkLocation(
 	//Sleep(1000);
 
 #endif
-
 	return ret;
-
-
-
-
 
 }
 
-extern"C" __declspec(dllexport)  int getMarkLocation2(
-	IN Mat& inImage,								// 拼接后的大图片
-	IN IVRectangle rectangle,                      // 输入的矩形区域
-	IN MarkPara makePara,					      // 圆孔（mark）检测对应的输入参数
-	OUT IVPoint & circleCentre		             // 返回圆心坐标
-	)
-{
-	int ret = 0;
-	//矩形坐标校正
-	if (rectangle.topLeftPoint.x > rectangle.bottomRightPoint.x) {
-		int tmp1 = rectangle.topLeftPoint.x;
-		rectangle.topLeftPoint.x = rectangle.bottomRightPoint.x;
-		rectangle.bottomRightPoint.x = tmp1;
-	}
-	if (rectangle.topLeftPoint.y > rectangle.bottomRightPoint.y) {
-		int tmp1 = rectangle.topLeftPoint.y;
-		rectangle.topLeftPoint.y = rectangle.bottomRightPoint.y;
-		rectangle.bottomRightPoint.y = tmp1;
-	}
-	//参数判断
-	if (inImage.empty() || rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.y<0 ||
-		rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y>inImage.rows || 
-		(rectangle.bottomRightPoint.x - rectangle.topLeftPoint.x==0) ||
-		(rectangle.bottomRightPoint.y - rectangle.topLeftPoint.y == 0)
-		){
-		ret = -1; return ret;
-	}
 
-	// Local iconic variables
-	Hobject  ho_Image, ho_Edges, ho_SelectedContours;
-	Hobject  ho_UnionContours;
-	// Local control variables
-	HTuple  hv_NumberCircles;
-	HTuple  hv_Row, hv_Column, hv_Radius, hv_StartPhi, hv_EndPhi;
-	HTuple  hv_PointOrder, hv_MaxRadius, hv_i;
-	HTuple  hv_outRaw, hv_outColumn;
 
-	//1. 获取矩形区域图像
-	Mat rectInImage, rectInImage1;
-	getRectRegion(inImage, rectangle, rectInImage1);
-	rectInImage1.copyTo(rectInImage);
-	if (rectInImage.channels()!=3){
-		ret = -1; return ret;
-	}
-
-	//改变亮度
-
-	//for (int y = 0; y < rectInImage.rows;y++){
-	//	for (int x = 0; x < rectInImage.cols;x++){
-	//		rectInImage.at<Vec3b>(y,x)[3] = 0;
-	//	}
-	//
-	//}
-
-	//2.图像格式转换
-	ho_Image = MatToHImage(rectInImage);
-	rgb1_to_gray(ho_Image, &ho_Image);
-	gauss_image(ho_Image, &ho_Image, makePara.sigma);
-	//derivate_gauss(ho_Image, &ho_Image, makePara.sigma, "none");
-	edges_sub_pix(ho_Image, &ho_Edges, "canny", makePara.alpha, 20, 40);
-	//alpha:参数指定值越小,平滑越强大,会减少边缘细节,cannay 相反0.9
-
-	//根据以下参数筛选轮廓 长度，方向，曲率，封闭（第三个参数）
-	select_contours_xld(ho_Edges, &ho_SelectedContours, "contour_length", makePara.minGirth, makePara.maxGirth, -0.5, 0.5);
-	select_contours_xld(ho_SelectedContours, &ho_SelectedContours, "closed", 0, makePara.maxLackGirth, 0, 0);
-
-	//合并重叠轮廓,主要把共线的轮廓合并在一起
-	union_cocircular_contours_xld(ho_SelectedContours, &ho_UnionContours, 1.6, 0.9, 0.9, 30, 40, 40, "true", 1);
-
-	//计算圆的个数
-	count_obj(ho_UnionContours, &hv_NumberCircles);
-
-	//获取圆心坐标  对单个轮廓做圆逼近；fit_eclipse 拟合椭圆
-	fit_circle_contour_xld(ho_SelectedContours, "algebraic", -1, 0, 0, 10, 2, &hv_Row, &hv_Column, &hv_Radius, &hv_StartPhi, &hv_EndPhi, &hv_PointOrder);
-	//输出定位坐标
-	if (0 != (hv_NumberCircles<1))
-	{
-		//hv_ResultText = "未检测到圆，请重新输入";
-		circleCentre.x = 0;
-		circleCentre.y = 0;
-		ret = -1;
-	}
-	else
-	{
-		tuple_max(hv_Radius, &hv_MaxRadius);
-		//HTuple end_val58 = hv_NumberCircles;
-		//HTuple step_val58 = 1;
-		for (hv_i = 0; hv_i <= hv_NumberCircles - 1; hv_i += 1)
-		{
-			if (0 != (HTuple(hv_Radius[hv_i]) == hv_MaxRadius))
-			{
-				hv_outRaw = hv_Row[hv_i];
-				circleCentre.y = hv_outRaw[0].D() + rectangle.topLeftPoint.y;
-				hv_outColumn = hv_Column[hv_i];
-				circleCentre.x = hv_outColumn[0].D() + rectangle.topLeftPoint.x;
-			}
-		}
-	}
-#ifdef _DEBUG
-	Point p(circleCentre.x, circleCentre.y);
-	cv::circle(rectInImage, p, 0, Scalar(0, 255, 0));
-	//imshow("圆孔定位", rectInImage);
-#endif
-	return ret;
-}
 
 // 图像校正
 /*****************************************************************************
@@ -307,7 +191,7 @@ extern"C" __declspec(dllexport)  int affineImage(
 
 // 黑胶检测结果返回
 /*****************************************************************************
-*  @brief    : 黑胶区域比例返回
+*  @brief    : 黑胶区域返回
 *****************************************************************************/
 extern"C" __declspec(dllexport)  int getAdhesiveResults(
 	IN Mat& inImage,                               // 拼接后的大图片
@@ -395,7 +279,7 @@ extern"C" __declspec(dllexport)  int DMDecode(
 		rectangle.topLeftPoint.x<0 || rectangle.topLeftPoint.x>inImage.cols ||
 		rectangle.topLeftPoint.y<0 || rectangle.topLeftPoint.y>inImage.rows ||
 		rectangle.bottomRightPoint.x<0 || rectangle.bottomRightPoint.x>inImage.cols ||
-		rectangle.bottomRightPoint.y<0 || rectangle.bottomRightPoint.y>inImage.cols ||
+		rectangle.bottomRightPoint.y<0 || rectangle.bottomRightPoint.y>inImage.rows ||
 		outImage == NULL)
 		return -1;
 	if (rectangle.topLeftPoint.x > rectangle.bottomRightPoint.x) {

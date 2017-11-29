@@ -23,8 +23,8 @@ void testBlack(){
 	IVRectangle rectangle = { point1, point2 };
 	AdhesiveResults adhesiveResults;
 	//---------------------------ºÚ½º¼ì²â½á¹û----------------------------------//
-	AdhesivePara adhesivePara = { 1, { 2, 52, 3.5 }, {} };
-	AdhesivePara adhesivePara2 = { 2, {}, { 1.0, 3.5 } };//bina
+	AdhesivePara adhesivePara1 = { 1, { 2, 42, 3.5 }, {} }; //thresh ÓÐ½º¼ì²â
+	AdhesivePara adhesivePara2 = { 2, {}, { 1.0, 3.5 } };//bina  ÎÞ½º¼ì²â
 	int i = 10;
 	//while (1)
 //	{
@@ -32,7 +32,7 @@ void testBlack(){
 		clock_t b = clock();
 		getAdhesiveResults(ho_Image, rectangle, adhesivePara2, adhesiveResults);
 		clock_t black = clock();
-		cout << "ºÚ½º¼ì²â1Ê±¼ä£º" << (double)(black -b) << endl;
+		cout << "ºÚ½º¼ì²âÊ±¼ä£º" << (double)(black -b) << endl;
 		//i--;
 //	}
 	
@@ -99,7 +99,7 @@ void mark(){
 		//-------------------------------Ô²¿×¶¨Î»----------------------------------//
 		MarkPara makePara = {3.0,3.0,100,99999,20};
 		IVPoint circleCentre;
-		Mat ho_Image = imread("E:\\±õ½­¸»Ê¿¿µµçÂ·°å¼ì²â\\Ô²¿×Í¼Ïñ\\17.png");
+		Mat ho_Image = imread("E:\\±õ½­¸»Ê¿¿µµçÂ·°å¼ì²â\\Ô²¿×Í¼Ïñ\\Mark15153545902.bmp");
 		IVPoint point1 = {0,0};
 		IVPoint point2 = { ho_Image.cols, ho_Image.rows };
 		IVRectangle rectangle = { point1, point2 };
